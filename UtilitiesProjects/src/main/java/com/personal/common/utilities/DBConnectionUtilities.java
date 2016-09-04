@@ -2,7 +2,9 @@ package com.personal.common.utilities;
 
 import org.apache.log4j.Logger;
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 /**
@@ -95,7 +97,7 @@ public class DBConnectionUtilities {
         Statement stmt=connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
                 ResultSet.CONCUR_READ_ONLY);
         StringBuffer sql = new StringBuffer("SELECT");
-        List<String> columns=extractColumnNames(connection,tableName);
+        List<String> columns=extractColumn(connection,tableName,"NAME");
         for (String col:columns){
             sql.append(" ");
             sql.append(col).append(",");
@@ -107,13 +109,73 @@ public class DBConnectionUtilities {
 
     }
 
-    private static List<String> extractColumnNames(Connection connection, String tableName) throws SQLException {
+    //category=NAME  -> will send all column names
+    //CATEGORY=TYPE--> will send all types
+
+    private static List<String> extractColumn(Connection connection, String tableName,String category) throws SQLException {
         List<Map<String,Object>> columnLists=new ArrayList<Map<String, Object>>();
         columnLists=getColumnsNamesandType(connection,tableName);
         List<String> columns=new ArrayList<String>();
+        String key="";
+        if (category.equalsIgnoreCase("NAME")) key="columnName";
+        else if (category.equalsIgnoreCase("TYPE")) key="columnType";
         for (Map<String,Object> map:columnLists){
-            columns.add((String) map.get("columnName"));
+            columns.add((String) map.get(key));
         }
         return columns;
     }
+
+    public static void insertRecords(Connection connection,String tableName,String insert_sql,List<Object> values) throws SQLException {
+        PreparedStatement preparedStatment=connection.prepareStatement(insert_sql);
+        List<String> columns=extractColumn(connection,tableName,"TYPE");
+        logger.info("types for tableName: "+tableName+" :: " +columns);
+        int count=1,index=0;
+        for (String type: columns){
+            preparedStatment=setPrepStmtByType(count++,type,preparedStatment,values.get(index++));
+        }
+        preparedStatment.addBatch();
+
+        //// TODO: 05/09/16 once for all rows addBatch() done finally:
+        //int[] rowsUpdated=preparedStatment.executeBatch();
+
+    }
+
+    private static PreparedStatement setPrepStmtByType(int index, String type, PreparedStatement preparedStatment, Object val) throws SQLException {
+        if (type.equalsIgnoreCase(DataTypes.INT.toString())){
+            preparedStatment.setInt(index, (Integer) val);
+        }
+        else if (type.equalsIgnoreCase(DataTypes.BIT.toString())){
+            preparedStatment.setBoolean(index, (Boolean) val);
+        }
+        else if (type.equalsIgnoreCase(DataTypes.VARCHAR.toString())){
+            preparedStatment.setString(index, (String) val);
+        }
+        else if (type.equalsIgnoreCase(DataTypes.DATE.toString())){
+            preparedStatment.setDate(index, (Date) val);
+        }else if (type.equalsIgnoreCase(DataTypes.BIGINT.toString())){
+            preparedStatment.setLong(index, (Long) val);
+        }else if (type.equalsIgnoreCase(DataTypes.TIMESTAMP.toString())){
+            preparedStatment.setTimestamp(index, (Timestamp) val);
+        }else if (type.equalsIgnoreCase(DataTypes.DATETIME.toString())){
+            preparedStatment.setDate(index, (Date) val);
+        }else if (type.equalsIgnoreCase(DataTypes.REAL.toString())){
+            preparedStatment.setFloat(index, (Float) val);
+        }else if (type.equalsIgnoreCase(DataTypes.FLOAT.toString())){
+            preparedStatment.setFloat(index, (Float) val);
+        }else if (type.equalsIgnoreCase(DataTypes.DOUBLE.toString())){
+            preparedStatment.setDouble(index, (Double) val);
+        }
+        else if (type.equalsIgnoreCase(DataTypes.NUMERIC.toString())){
+            preparedStatment.setBigDecimal(index, (BigDecimal) val);
+        }
+        else if (type.equalsIgnoreCase(DataTypes.DECIMAL.toString())){
+            preparedStatment.setBigDecimal(index, (BigDecimal) val);
+        }
+        else if (type.equalsIgnoreCase(DataTypes.INTEGER.toString())){
+            preparedStatment.setInt(index, (Integer) val);
+        }
+        return preparedStatment;
+    }
+
+
 }

@@ -40,7 +40,6 @@ public class ExportDatatoCSV {
             tableNames=DBConnectionUtilities.getTableNames(connection);
             for (String tab:tableNames){
                 logger.info("for table name::"+tab);
-                //logger.info(DBConnectionUtilities.getColumnsNamesandType(connection,tab));
                 ResultSet rs=DBConnectionUtilities.createResultSet(connection,tab);
                 writeTOCSV(tab,rs);
             }
