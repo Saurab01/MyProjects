@@ -1,5 +1,7 @@
 package com.personal.common.utilities;
 
+import org.apache.log4j.Logger;
+
 import java.sql.*;
 import java.util.*;
 
@@ -7,6 +9,7 @@ import java.util.*;
  * Created by saurabhagrawal on 21/06/16.
  */
 public class DBConnectionUtilities {
+    public static Logger logger = Logger.getLogger(DBConnectionUtilities.class);
     public static Connection getConnection(String driver,String databaseUrl,String userName,String password) throws SQLException,ClassNotFoundException {
 
         Class.forName(driver);
@@ -40,8 +43,7 @@ public class DBConnectionUtilities {
      */
     /*
     The ResultSet returned from the getTables() method contains a list of table names matching the 4 given parameters
-    (which were all null). This ResultSet contains 10 columns, which each contain information about the given table.
-    The column with index 3 contains the table name itself.
+    (which were all null).
      */
     public static List<String> getTableNames(Connection connection) throws SQLException {
         DatabaseMetaData databaseMetaData = connection.getMetaData();
@@ -89,4 +91,29 @@ public class DBConnectionUtilities {
 
     }
 
+    public static ResultSet createResultSet(Connection connection, String tableName) throws SQLException {
+        Statement stmt=connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        StringBuffer sql = new StringBuffer("SELECT");
+        List<String> columns=extractColumnNames(connection,tableName);
+        for (String col:columns){
+            sql.append(" ");
+            sql.append(col).append(",");
+        }
+        sql.deleteCharAt(sql.length()-1);   //deleting comma at last
+        sql.append(" FROM ").append(tableName);
+        logger.info("sql created is:::"+sql);
+        return stmt.executeQuery(sql.toString());
+
+    }
+
+    private static List<String> extractColumnNames(Connection connection, String tableName) throws SQLException {
+        List<Map<String,Object>> columnLists=new ArrayList<Map<String, Object>>();
+        columnLists=getColumnsNamesandType(connection,tableName);
+        List<String> columns=new ArrayList<String>();
+        for (Map<String,Object> map:columnLists){
+            columns.add((String) map.get("columnName"));
+        }
+        return columns;
+    }
 }

@@ -21,7 +21,7 @@ public class ExportCSVMain {
 
         List<String> configFilesList=new ArrayList<String>();
         configFilesList.add("database.properties");
-        configFilesList.add("application.properties");
+        configFilesList.add("export.properties");
         PropertiesReader.initialize(configFilesList);
 
         ExportDatatoCSV exportDatatoCSV=new ExportDatatoCSV();

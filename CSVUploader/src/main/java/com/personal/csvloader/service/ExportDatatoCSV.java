@@ -1,11 +1,15 @@
 package com.personal.csvloader.service;
 
+import com.opencsv.CSVWriter;
 import com.personal.common.utilities.DBConnectionUtilities;
 import com.personal.common.utilities.PropertiesReader;
 import org.apache.log4j.Logger;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,15 +40,18 @@ public class ExportDatatoCSV {
             tableNames=DBConnectionUtilities.getTableNames(connection);
             for (String tab:tableNames){
                 logger.info("for table name::"+tab);
-                logger.info(DBConnectionUtilities.getColumnsNamesandType(connection,tab));
+                //logger.info(DBConnectionUtilities.getColumnsNamesandType(connection,tab));
+                ResultSet rs=DBConnectionUtilities.createResultSet(connection,tab);
+                writeTOCSV(tab,rs);
             }
 
         } catch (ClassNotFoundException e) {
             logger.error(e);
         } catch (SQLException e) {
             logger.error(e);
-        }
-        finally {
+        } catch (IOException e) {
+            logger.error("error while writing to csv",e);
+        } finally {
             try {
                 if (connection!=null)
                     connection.close();
@@ -53,5 +60,12 @@ public class ExportDatatoCSV {
                 logger.error("error while closing connection"+e);
             }
         }
+    }
+
+    private void writeTOCSV(String tableName, ResultSet resultSet) throws IOException, SQLException {
+        CSVWriter writer = new CSVWriter(new FileWriter(tableName+".csv"), '\t');  //separated by tab
+        boolean includeHeaders=true;
+        writer.writeAll(resultSet,includeHeaders);
+        writer.close();
     }
 }
