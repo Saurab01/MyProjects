@@ -4,8 +4,6 @@ import org.apache.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -44,7 +42,7 @@ public class PropertiesReader
         }catch(Exception e){
             logger.error("failure in accessing file",e);
         }
-        logger.debug("properties::"+properties);
+        //logger.debug("properties::"+properties);
         return properties;
     }
     //if property is not found it will return null

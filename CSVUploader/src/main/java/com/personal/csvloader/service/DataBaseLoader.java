@@ -2,7 +2,7 @@ package com.personal.csvloader.service;
 
 
 import com.opencsv.CSVReader;
-import com.personal.common.utilities.DBConnection;
+import com.personal.common.utilities.DBConnectionUtilities;
 import com.personal.common.utilities.PropertiesReader;
 import org.apache.log4j.Logger;
 
@@ -25,7 +25,10 @@ public class DataBaseLoader {
         Connection connection=null;
         CSVReader rowsReader=null;
         String filePath=null;
-        String driver="", databaseUrl="", userName="", password=""; //// TODO: 22/06/16 add from properties file
+        String driver=PropertiesReader.getProperty("db.driver"),
+                databaseUrl=PropertiesReader.getProperty("db.database"),
+                userName=PropertiesReader.getProperty("db.username"),
+                password=PropertiesReader.getProperty("db.password");
 
 
         try{
@@ -35,7 +38,7 @@ public class DataBaseLoader {
             assert listofFiles != null;  //// TODO: 22/06/16 check what it does
             for (File file:listofFiles){  //todo:null pointer check
                 if (file.getName().contains(".csv") ){
-                    connection= DBConnection.getConnection(driver, databaseUrl, userName, password);
+                    connection= DBConnectionUtilities.getConnection(driver, databaseUrl, userName, password);
                     filePath=PropertiesReader.getProperty("csv.filePath");
                     filePath=filePath.replace("\\","/");  //todo: null pointer
                     tableName=file.getName().substring(file.getName().indexOf(".")+1,file.getName().length()-4);

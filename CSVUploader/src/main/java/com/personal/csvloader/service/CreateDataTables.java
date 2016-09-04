@@ -1,8 +1,9 @@
 package com.personal.csvloader.service;
 
-import com.saurabh.common.utils.CommonUtilities;
-import com.saurabh.common.utils.DBConnection;
-import com.saurabh.common.utils.PropertiesReader;
+
+import com.personal.common.utilities.CommonUtilities;
+import com.personal.common.utilities.DBConnectionUtilities;
+import com.personal.common.utilities.PropertiesReader;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.log4j.Logger;
 
@@ -22,15 +23,17 @@ public class CreateDataTables {
     public static Logger logger=Logger.getLogger(CreateDataTables.class);
 
     private InputStream inputStream;
-    String driver="", databaseUrl="", userName="", password=""; //// TODO: 22/06/16 add from properties file
+    String driver=PropertiesReader.getProperty("db.driver"),
+            databaseUrl=PropertiesReader.getProperty("db.database"),
+            userName=PropertiesReader.getProperty("db.username"),
+            password=PropertiesReader.getProperty("db.password");
 
     public boolean createTables() {
         Connection connection=null;
         boolean success=false;
         try{
             logger.info("Excecuting scripts for Table creation::");
-            connection= DBConnection.getConnection(driver, databaseUrl, userName, password);
-
+            connection= DBConnectionUtilities.getConnection(driver, databaseUrl, userName, password);
 
             //give the input file to Reader
             inputStream=getClass().getResourceAsStream(PropertiesReader.getProperty("database.createTable"));

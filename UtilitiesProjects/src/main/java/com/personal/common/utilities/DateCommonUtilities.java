@@ -1,7 +1,5 @@
 package com.personal.common.utilities;
 
-import org.apache.commons.lang3.time.DateUtils;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -42,5 +40,24 @@ EEEE, MMM dd, yyyy HH:mm:ss a"   --Friday, Jun 7, 2013 12:10:56 PM
     public static Date convertCalendarTODate(Calendar calendar){
         Date date =  calendar.getTime();
         return date;
+    }
+    // CHECK THE IF DATE IS OF VALID FORMAT
+    public static boolean isThisDateValid(String dateToValidate, String dateFormat) {
+
+        if (dateToValidate == null) {
+            return false;
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        sdf.setLenient(false);
+        //By default, SimpleDateFormat.setLenient() is set to true,
+        // you should always turn it off to make your date validation more strictly.
+        try {
+            //if not valid, it will throw ParseException
+            Date date = sdf.parse(dateToValidate);
+        } catch (ParseException e) {
+            return false;
+        }
+
+        return true;
     }
 }
