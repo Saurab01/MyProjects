@@ -10,14 +10,7 @@ public class FileUtilities {
     * @param absoluteFileName File name with path
     * @return FileName minus the path   c:\myDir\MyFile.java"  -->MyFile.java
     */
-
-    public static String extractFileName(String absoluteFileName) {
-
-        /*if (!isNullOrEmpty(absoluteFileName)) {
-            absoluteFileName = absoluteFileName.substring(absoluteFileName
-                    .lastIndexOf(File.separatorChar) + 1, absoluteFileName.lastIndexOf("."));
-
-        }*/
-        return absoluteFileName;
+    public static String extractFileName(String absoluteFilePath) {
+        return absoluteFilePath.substring(absoluteFilePath.lastIndexOf("/") + 1, absoluteFilePath.length());
     }
 }

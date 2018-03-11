@@ -1,0 +1,6 @@
+com/personal/common/utilities/FileUtilities.class
+com/personal/common/utilities/CommonUtilities.class
+com/personal/common/utilities/DBConnectionUtilities.class
+com/personal/common/utilities/DateCommonUtilities.class
+com/personal/common/utilities/EmailNotification.class
+com/personal/common/utilities/PropertiesReader.class
